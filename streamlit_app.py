@@ -92,23 +92,36 @@ else:
         for idx, q in enumerate(questions):
             st.markdown(f"**{q['текст']}**")
 
-            # Унікальні ключі для кожного питання
-            multiselect_key = f"q_{тема}_{idx}_multiselect"
-            submit_key = f"q_{тема}_{idx}_submit"
+            question_key = f"q_{тема}_{idx}"
+            submit_key = f"{question_key}_submitted"
+
+            # Ініціалізація стану
+            if question_key not in st.session_state:
+                st.session_state[question_key] = []
+            if submit_key not in st.session_state:
+                st.session_state[submit_key] = False
 
             if isinstance(q["правильна"], list):
-                selected = st.multiselect("Оберіть варіанти:", q["варіанти"], key=multiselect_key)
+                selected = st.multiselect(
+                    "Оберіть варіанти:",
+                    q["варіанти"],
+                    default=st.session_state[question_key],
+                    key=question_key
+                )
 
-                if st.button("Підтвердити відповідь", key=submit_key):
-                    if selected:
-                        selected_idx = [q["варіанти"].index(x) for x in selected]
-                        if sorted(selected_idx) == sorted(q["правильна"]):
-                            st.success("✅ Правильно!")
-                            correct += 1
-                        else:
-                            st.error("❌ Неправильно.")
-                            show_explanation(lectures[тема], q["заголовок"], q["ключ"])
-                            recommendations.append((тема, q["заголовок"], q["ключ"]))
+                if st.button("Підтвердити відповідь", key=f"{question_key}_button"):
+                    st.session_state[question_key] = selected
+                    st.session_state[submit_key] = True
+
+                if st.session_state[submit_key]:
+                    selected_idx = [q["варіанти"].index(x) for x in st.session_state[question_key]]
+                    if sorted(selected_idx) == sorted(q["правильна"]):
+                        st.success("✅ Правильно!")
+                        correct += 1
+                    else:
+                        st.error("❌ Неправильно.")
+                        show_explanation(lectures[тема], q["заголовок"], q["ключ"])
+                        recommendations.append((тема, q["заголовок"], q["ключ"]))
                     else:
                         st.warning("⚠️ Будь ласка, оберіть хоча б один варіант відповіді.")
             else:
