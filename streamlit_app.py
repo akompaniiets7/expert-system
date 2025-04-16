@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime
 
+# Завантаження лекцій
 @st.cache_data
 def load_lectures():
     lectures = {}
@@ -13,6 +14,7 @@ def load_lectures():
                 lectures[data["тема"]] = data
     return lectures
 
+# Завантаження тестів
 @st.cache_data
 def load_tests():
     tests = {}
@@ -23,6 +25,7 @@ def load_tests():
                 tests[data["тема"]] = data["питання"]
     return tests
 
+# Збереження результату
 def save_result(user, тема, правильних, всього, рекомендації):
     result = {
         "користувач": user,
@@ -50,17 +53,33 @@ def show_explanation(lecture, заголовок, ключ):
                     st.info(f"📘 Пояснення: {підтема['текст']}")
                     return
 
+# Основна логіка тестування
 st.set_page_config(page_title="Експертна система з матеріалознавства")
 st.title("🎓 Експертна система з матеріалознавства")
 
 lectures = load_lectures()
 tests = load_tests()
 
-user_name = st.text_input("Введіть ваше ім'я для збереження результату:", "Студент")
 topics = list(tests.keys())
-selected_topic = st.selectbox("Оберіть тему для проходження тесту:", ["Всі теми"] + topics)
 
-if st.button("Почати тестування"):
+# --- Стан користувача ---
+if "user_started" not in st.session_state:
+    st.session_state.user_started = False
+
+if not st.session_state.user_started:
+    user_name = st.text_input("Введіть ваше ім'я для збереження результату:")
+    selected_topic = st.selectbox("Оберіть тему для проходження тесту:", ["Всі теми"] + topics)
+
+    if st.button("Почати тестування") and user_name.strip() != "":
+        st.session_state.user_started = True
+        st.session_state.user_name = user_name
+        st.session_state.selected_topic = selected_topic
+        st.experimental_rerun()
+else:
+    user_name = st.session_state.user_name
+    selected_topic = st.session_state.selected_topic
+    st.success(f"Вітаємо, {user_name}! Ви проходите тест з теми: {selected_topic}")
+
     recommendations = []
     correct_total = 0
     question_total = 0
@@ -70,12 +89,11 @@ if st.button("Почати тестування"):
         questions = tests[тема]
         correct = 0
 
-        for q in questions:
+        for idx, q in enumerate(questions):
             st.markdown(f"**{q['текст']}**")
-            selected = []
 
             if isinstance(q["правильна"], list):
-                selected = st.multiselect("Оберіть варіанти:", q["варіанти"], key=q["текст"])
+                selected = st.multiselect("Оберіть варіанти:", q["варіанти"], key=f"q_{тема}_{idx}")
                 selected_idx = [q["варіанти"].index(x) for x in selected]
                 if sorted(selected_idx) == sorted(q["правильна"]):
                     st.success("✅ Правильно!")
@@ -85,7 +103,7 @@ if st.button("Почати тестування"):
                     show_explanation(lectures[тема], q["заголовок"], q["ключ"])
                     recommendations.append((тема, q["заголовок"], q["ключ"]))
             else:
-                answer = st.radio("Оберіть один варіант:", q["варіанти"], key=q["текст"])
+                answer = st.radio("Оберіть один варіант:", q["варіанти"], key=f"q_{тема}_{idx}")
                 answer_idx = q["варіанти"].index(answer)
                 if answer_idx == q["правильна"]:
                     st.success("✅ Правильно!")
