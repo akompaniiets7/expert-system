@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+import io
 from datetime import datetime
 
 # Завантаження лекцій
@@ -145,4 +146,7 @@ else:
         st.success("Вітаємо! Усі відповіді правильні 🎉")
 
     save_result(user_name, selected_topic, correct_total, question_total, recommendations)
-
+    if os.path.exists("results.json"):
+    with open("results.json", "r", encoding="utf-8") as f:
+        result_data = f.read()
+    st.download_button("⬇️ Завантажити всі результати", data=result_data, file_name="results.json")
