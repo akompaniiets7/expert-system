@@ -92,18 +92,27 @@ else:
         for idx, q in enumerate(questions):
             st.markdown(f"**{q['текст']}**")
 
+            # Унікальні ключі для кожного питання
+            multiselect_key = f"q_{тема}_{idx}_multiselect"
+            submit_key = f"q_{тема}_{idx}_submit"
+
             if isinstance(q["правильна"], list):
-                selected = st.multiselect("Оберіть варіанти:", q["варіанти"], key=f"q_{тема}_{idx}")
-                selected_idx = [q["варіанти"].index(x) for x in selected]
-                if sorted(selected_idx) == sorted(q["правильна"]):
-                    st.success("✅ Правильно!")
-                    correct += 1
-                else:
-                    st.error("❌ Неправильно.")
-                    show_explanation(lectures[тема], q["заголовок"], q["ключ"])
-                    recommendations.append((тема, q["заголовок"], q["ключ"]))
+                selected = st.multiselect("Оберіть варіанти:", q["варіанти"], key=multiselect_key)
+
+                if st.button("Підтвердити відповідь", key=submit_key):
+                    if selected:
+                        selected_idx = [q["варіанти"].index(x) for x in selected]
+                        if sorted(selected_idx) == sorted(q["правильна"]):
+                            st.success("✅ Правильно!")
+                            correct += 1
+                        else:
+                            st.error("❌ Неправильно.")
+                            show_explanation(lectures[тема], q["заголовок"], q["ключ"])
+                            recommendations.append((тема, q["заголовок"], q["ключ"]))
+                    else:
+                        st.warning("⚠️ Будь ласка, оберіть хоча б один варіант відповіді.")
             else:
-                answer = st.radio("Оберіть один варіант:", q["варіанти"], key=f"q_{тема}_{idx}", index=None)
+                answer = st.radio("Оберіть один варіант:", q["варіанти"], key=f"q_{тема}_{idx}_radio", index=None)
                 if answer is not None:
                     answer_idx = q["варіанти"].index(answer)
                     if answer_idx == q["правильна"]:
@@ -132,3 +141,4 @@ else:
         st.success("Вітаємо! Усі відповіді правильні 🎉")
 
     save_result(user_name, selected_topic, correct_total, question_total, recommendations)
+
