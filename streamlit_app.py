@@ -103,7 +103,7 @@ else:
                     show_explanation(lectures[тема], q["заголовок"], q["ключ"])
                     recommendations.append((тема, q["заголовок"], q["ключ"]))
             else:
-                answer = st.radio("Оберіть один варіант:", q["варіанти"], key=f"q_{тема}_{idx}")
+                answer = st.radio("Оберіть один варіант:", q["варіанти"], key=f"q_{тема}_{idx}", index=None)
                 answer_idx = q["варіанти"].index(answer)
                 if answer_idx == q["правильна"]:
                     st.success("✅ Правильно!")
