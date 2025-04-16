@@ -61,9 +61,9 @@ lectures = load_lectures()
 tests = load_tests()
 
 topics = list(tests.keys())
-if "Методи фізико-хімічного аналізу металів." in topics:
-    topics.remove("Методи фізико-хімічного аналізу металів.")
-    topics.append("Методи фізико-хімічного аналізу металів.")
+if "Основні властивості металів." in topics:
+    topics.remove("Основні властивості металів.")
+    topics.append("Основні властивості металів.")
 
 
 # --- Стан користувача ---
