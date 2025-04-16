@@ -92,71 +92,38 @@ else:
         for idx, q in enumerate(questions):
             st.markdown(f"**{q['текст']}**")
 
-            question_key = f"q_{тема}_{idx}"
-            submit_key = f"{question_key}_submitted"
-            result_key = f"{question_key}_result"
-
-            # Ініціалізація стану
-            if question_key not in st.session_state:
-                st.session_state[question_key] = []
-            if submit_key not in st.session_state:
-                st.session_state[submit_key] = False
-            if result_key not in st.session_state:
-                st.session_state[result_key] = None
+            # Унікальні ключі для кожного питання
+            multiselect_key = f"q_{тема}_{idx}_multiselect"
+            submit_key = f"q_{тема}_{idx}_submit"
 
             if isinstance(q["правильна"], list):
-                selected = st.multiselect(
-                    "Оберіть варіанти:",
-                    q["варіанти"],
-                    default=st.session_state[question_key],
-                    key=question_key
-                )
+                selected = st.multiselect("Оберіть варіанти:", q["варіанти"], key=multiselect_key)
 
-                if st.button("Підтвердити відповідь", key=f"{question_key}_button"):
-                    st.session_state[question_key] = selected
-                    st.session_state[submit_key] = True
-                    selected_idx = [q["варіанти"].index(x) for x in selected]
-                    if sorted(selected_idx) == sorted(q["правильна"]):
-                        st.session_state[result_key] = True
-                    else:
-                        st.session_state[result_key] = False
-
-                if st.session_state[submit_key]:
-                    if st.session_state[result_key]:
-                        st.success("✅ Правильно!")
-                        correct += 1
-                    else:
-                        st.error("❌ Неправильно.")
-                        show_explanation(lectures[тема], q["заголовок"], q["ключ"])
-                        recommendations.append((тема, q["заголовок"], q["ключ"]))
-            else:
-                answer = st.radio(
-                    "Оберіть один варіант:",
-                    q["варіанти"],
-                    key=f"{question_key}_radio",
-                    index=None
-                )
-
-                if st.button("Підтвердити відповідь", key=f"{question_key}_button"):
-                    if answer is not None:
-                        st.session_state[question_key] = answer
-                        st.session_state[submit_key] = True
-                        answer_idx = q["варіанти"].index(answer)
-                        if answer_idx == q["правильна"]:
-                            st.session_state[result_key] = True
+                if st.button("Підтвердити відповідь", key=submit_key):
+                    if selected:
+                        selected_idx = [q["варіанти"].index(x) for x in selected]
+                        if sorted(selected_idx) == sorted(q["правильна"]):
+                            st.success("✅ Правильно!")
+                            correct += 1
                         else:
-                            st.session_state[result_key] = False
+                            st.error("❌ Неправильно.")
+                            show_explanation(lectures[тема], q["заголовок"], q["ключ"])
+                            recommendations.append((тема, q["заголовок"], q["ключ"]))
                     else:
-                        st.warning("⚠️ Будь ласка, оберіть варіант відповіді.")
-
-                if st.session_state[submit_key]:
-                    if st.session_state[result_key]:
+                        st.warning("⚠️ Будь ласка, оберіть хоча б один варіант відповіді.")
+            else:
+                answer = st.radio("Оберіть один варіант:", q["варіанти"], key=f"q_{тема}_{idx}_radio", index=None)
+                if answer is not None:
+                    answer_idx = q["варіанти"].index(answer)
+                    if answer_idx == q["правильна"]:
                         st.success("✅ Правильно!")
                         correct += 1
                     else:
                         st.error("❌ Неправильно.")
                         show_explanation(lectures[тема], q["заголовок"], q["ключ"])
                         recommendations.append((тема, q["заголовок"], q["ключ"]))
+                else:
+                    st.warning("⚠️ Будь ласка, оберіть варіант відповіді.")
 
         st.markdown(f"**Результат по темі \"{тема}\": {correct}/{len(questions)}**")
         correct_total += correct
@@ -174,3 +141,4 @@ else:
         st.success("Вітаємо! Усі відповіді правильні 🎉")
 
     save_result(user_name, selected_topic, correct_total, question_total, recommendations)
+
