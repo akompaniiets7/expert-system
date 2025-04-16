@@ -104,14 +104,17 @@ else:
                     recommendations.append((тема, q["заголовок"], q["ключ"]))
             else:
                 answer = st.radio("Оберіть один варіант:", q["варіанти"], key=f"q_{тема}_{idx}", index=None)
-                answer_idx = q["варіанти"].index(answer)
-                if answer_idx == q["правильна"]:
-                    st.success("✅ Правильно!")
-                    correct += 1
+                if answer is not None:
+                    answer_idx = q["варіанти"].index(answer)
+                    if answer_idx == q["правильна"]:
+                        st.success("✅ Правильно!")
+                        correct += 1
+                    else:
+                        st.error("❌ Неправильно.")
+                        show_explanation(lectures[тема], q["заголовок"], q["ключ"])
+                        recommendations.append((тема, q["заголовок"], q["ключ"]))
                 else:
-                    st.error("❌ Неправильно.")
-                    show_explanation(lectures[тема], q["заголовок"], q["ключ"])
-                    recommendations.append((тема, q["заголовок"], q["ключ"]))
+                    st.warning("⚠️ Будь ласка, оберіть варіант відповіді.")
 
         st.markdown(f"**Результат по темі \"{тема}\": {correct}/{len(questions)}**")
         correct_total += correct
