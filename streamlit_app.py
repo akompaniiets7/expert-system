@@ -74,7 +74,7 @@ if not st.session_state.user_started:
         st.session_state.user_started = True
         st.session_state.user_name = user_name
         st.session_state.selected_topic = selected_topic
-        st.experimental_rerun()
+        st.rerun()
 else:
     user_name = st.session_state.user_name
     selected_topic = st.session_state.selected_topic
