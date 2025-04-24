@@ -1,7 +1,6 @@
 import streamlit as st
 import json
 import os
-import io
 from datetime import datetime
 
 # Завантаження лекцій
@@ -61,11 +60,13 @@ st.title("🎓 Експертна система з матеріалознавс
 lectures = load_lectures()
 tests = load_tests()
 
+if "result_saved" not in st.session_state:
+    st.session_state.result_saved = False
+
 topics = list(tests.keys())
 if "Основні властивості металів." in topics:
     topics.remove("Основні властивості металів.")
     topics.append("Основні властивості металів.")
-
 
 # --- Стан користувача ---
 if "user_started" not in st.session_state:
@@ -79,6 +80,7 @@ if not st.session_state.user_started:
         st.session_state.user_started = True
         st.session_state.user_name = user_name
         st.session_state.selected_topic = selected_topic
+        st.session_state.result_saved = False
         st.rerun()
 else:
     user_name = st.session_state.user_name
@@ -145,7 +147,9 @@ else:
     else:
         st.success("Вітаємо! Усі відповіді правильні 🎉")
 
-    save_result(user_name, selected_topic, correct_total, question_total, recommendations)
+    if not st.session_state.result_saved:
+        save_result(user_name, selected_topic, correct_total, question_total, recommendations)
+        st.session_state.result_saved = True
 
     if os.path.exists("results.json"):
         with open("results.json", "r", encoding="utf-8") as f:
@@ -156,4 +160,3 @@ else:
             file_name="results.json",
             mime="application/json"
         )
-
