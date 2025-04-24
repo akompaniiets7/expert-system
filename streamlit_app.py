@@ -144,7 +144,7 @@ else:
     else:
         st.success("Вітаємо! Усі відповіді правильні 🎉")
 
-    save_result(user_name, selected_topic, correct_total, question_total, recommendations) - ось тут 
+    save_result(user_name, selected_topic, correct_total, question_total, recommendations)
 
     if os.path.exists("results.json"):
         with open("results.json", "r", encoding="utf-8") as f:
