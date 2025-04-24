@@ -95,17 +95,15 @@ else:
         st.subheader(f"📚 Тема: {тема}")
         questions = tests[тема]
         correct = 0
+        recommendations = []
 
         for idx, q in enumerate(questions):
             st.markdown(f"**{q['текст']}**")
-
-            # Унікальні ключі для кожного питання
             multiselect_key = f"q_{тема}_{idx}_multiselect"
             submit_key = f"q_{тема}_{idx}_submit"
 
             if isinstance(q["правильна"], list):
                 selected = st.multiselect("Оберіть варіанти:", q["варіанти"], key=multiselect_key)
-
                 if st.button("Підтвердити відповідь", key=submit_key):
                     if selected:
                         selected_idx = [q["варіанти"].index(x) for x in selected]
@@ -133,23 +131,10 @@ else:
                     st.warning("⚠️ Будь ласка, оберіть варіант відповіді.")
 
         st.markdown(f"**Результат по темі \"{тема}\": {correct}/{len(questions)}**")
-        correct_total += correct
-        question_total += len(questions)
+        save_result(user_name, тема, correct, len(questions), recommendations)
 
     st.markdown("---")
-    st.subheader("📊 Загальний результат")
-    st.write(f"Правильних відповідей: **{correct_total} / {question_total}** ({(correct_total/question_total)*100:.1f}%)")
-
-    if recommendations:
-        st.warning("📌 Рекомендації:")
-        for тема, заголовок, ключ in recommendations:
-            st.write(f"- **{тема} → {заголовок} → {ключ}**")
-    else:
-        st.success("Вітаємо! Усі відповіді правильні 🎉")
-
-    if not st.session_state.result_saved:
-        save_result(user_name, selected_topic, correct_total, question_total, recommendations)
-        st.session_state.result_saved = True
+    st.success("✅ Всі обрані теми пройдено. Ви можете завантажити загальний файл результатів нижче.")
 
     if os.path.exists("results.json"):
         with open("results.json", "r", encoding="utf-8") as f:
@@ -160,3 +145,4 @@ else:
             file_name="results.json",
             mime="application/json"
         )
+
