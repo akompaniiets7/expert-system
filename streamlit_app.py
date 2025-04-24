@@ -1,3 +1,4 @@
+Анастасия, [24.04.2025 13:14]
 import streamlit as st
 import json
 import os
@@ -60,13 +61,11 @@ st.title("🎓 Експертна система з матеріалознавс
 lectures = load_lectures()
 tests = load_tests()
 
-if "result_saved" not in st.session_state:
-    st.session_state.result_saved = False
-
 topics = list(tests.keys())
 if "Основні властивості металів." in topics:
     topics.remove("Основні властивості металів.")
     topics.append("Основні властивості металів.")
+
 
 # --- Стан користувача ---
 if "user_started" not in st.session_state:
@@ -80,7 +79,6 @@ if not st.session_state.user_started:
         st.session_state.user_started = True
         st.session_state.user_name = user_name
         st.session_state.selected_topic = selected_topic
-        st.session_state.result_saved = False
         st.rerun()
 else:
     user_name = st.session_state.user_name
@@ -95,16 +93,19 @@ else:
         st.subheader(f"📚 Тема: {тема}")
         questions = tests[тема]
         correct = 0
-        recommendations = []
 
         for idx, q in enumerate(questions):
-            st.markdown(f"**{q['текст']}**")
+            st.markdown(f"{q['текст']}")
+
+            # Унікальні ключі для кожного питання
             multiselect_key = f"q_{тема}_{idx}_multiselect"
             submit_key = f"q_{тема}_{idx}_submit"
 
             if isinstance(q["правильна"], list):
                 selected = st.multiselect("Оберіть варіанти:", q["варіанти"], key=multiselect_key)
-                if st.button("Підтвердити відповідь", key=submit_key):
+
+Анастасия, [24.04.2025 13:14]
+if st.button("Підтвердити відповідь", key=submit_key):
                     if selected:
                         selected_idx = [q["варіанти"].index(x) for x in selected]
                         if sorted(selected_idx) == sorted(q["правильна"]):
@@ -130,11 +131,22 @@ else:
                 else:
                     st.warning("⚠️ Будь ласка, оберіть варіант відповіді.")
 
-        st.markdown(f"**Результат по темі \"{тема}\": {correct}/{len(questions)}**")
-        save_result(user_name, тема, correct, len(questions), recommendations)
+        st.markdown(f"Результат по темі \"{тема}\": {correct}/{len(questions)}")
+        correct_total += correct
+        question_total += len(questions)
 
     st.markdown("---")
-    st.success("✅ Всі обрані теми пройдено. Ви можете завантажити загальний файл результатів нижче.")
+    st.subheader("📊 Загальний результат")
+    st.write(f"Правильних відповідей: {correct_total} / {question_total} ({(correct_total/question_total)*100:.1f}%)")
+
+    if recommendations:
+        st.warning("📌 Рекомендації:")
+        for тема, заголовок, ключ in recommendations:
+            st.write(f"- {тема} → {заголовок} → {ключ}")
+    else:
+        st.success("Вітаємо! Усі відповіді правильні 🎉")
+
+    save_result(user_name, selected_topic, correct_total, question_total, recommendations)
 
     if os.path.exists("results.json"):
         with open("results.json", "r", encoding="utf-8") as f:
@@ -145,4 +157,3 @@ else:
             file_name="results.json",
             mime="application/json"
         )
-
