@@ -1,4 +1,3 @@
-Анастасия, [24.04.2025 13:14]
 import streamlit as st
 import json
 import os
@@ -95,7 +94,7 @@ else:
         correct = 0
 
         for idx, q in enumerate(questions):
-            st.markdown(f"{q['текст']}")
+            st.markdown(f"**{q['текст']}**")
 
             # Унікальні ключі для кожного питання
             multiselect_key = f"q_{тема}_{idx}_multiselect"
@@ -104,8 +103,7 @@ else:
             if isinstance(q["правильна"], list):
                 selected = st.multiselect("Оберіть варіанти:", q["варіанти"], key=multiselect_key)
 
-Анастасия, [24.04.2025 13:14]
-if st.button("Підтвердити відповідь", key=submit_key):
+                if st.button("Підтвердити відповідь", key=submit_key):
                     if selected:
                         selected_idx = [q["варіанти"].index(x) for x in selected]
                         if sorted(selected_idx) == sorted(q["правильна"]):
@@ -131,22 +129,22 @@ if st.button("Підтвердити відповідь", key=submit_key):
                 else:
                     st.warning("⚠️ Будь ласка, оберіть варіант відповіді.")
 
-        st.markdown(f"Результат по темі \"{тема}\": {correct}/{len(questions)}")
+        st.markdown(f"**Результат по темі \"{тема}\": {correct}/{len(questions)}**")
         correct_total += correct
         question_total += len(questions)
 
     st.markdown("---")
     st.subheader("📊 Загальний результат")
-    st.write(f"Правильних відповідей: {correct_total} / {question_total} ({(correct_total/question_total)*100:.1f}%)")
+    st.write(f"Правильних відповідей: **{correct_total} / {question_total}** ({(correct_total/question_total)*100:.1f}%)")
 
     if recommendations:
         st.warning("📌 Рекомендації:")
         for тема, заголовок, ключ in recommendations:
-            st.write(f"- {тема} → {заголовок} → {ключ}")
+            st.write(f"- **{тема} → {заголовок} → {ключ}**")
     else:
         st.success("Вітаємо! Усі відповіді правильні 🎉")
 
-    save_result(user_name, selected_topic, correct_total, question_total, recommendations)
+    save_result(user_name, selected_topic, correct_total, question_total, recommendations) - ось тут 
 
     if os.path.exists("results.json"):
         with open("results.json", "r", encoding="utf-8") as f:
@@ -157,3 +155,5 @@ if st.button("Підтвердити відповідь", key=submit_key):
             file_name="results.json",
             mime="application/json"
         )
+
+
