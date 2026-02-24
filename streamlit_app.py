@@ -4,16 +4,18 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
+GA_ID = "G-FPYL3Y97YQ"   # ← твій справжній ID
+
 components.html(
     f"""
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FPYL3Y97YQ"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){{dataLayer.push(arguments);}}
       gtag('js', new Date());
 
-      gtag('config', '{G-FPYL3Y97YQ}', {{ debug_mode: true }});
+      gtag('config', '{GA_ID}', {{ debug_mode: true }});
     </script>
     """,
     height=0,
