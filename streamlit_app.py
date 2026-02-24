@@ -10,7 +10,7 @@ components.html(
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FPYL3Y97YQ"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag(){{dataLayer.push(arguments);}}
       gtag('js', new Date());
 
       gtag('config', 'G-FPYL3Y97YQ');
