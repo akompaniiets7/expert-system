@@ -4,17 +4,16 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-GA_MEASUREMENT_ID = "G-FPYL3Y97YQ"
-
 components.html(
     f"""
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FPYL3Y97YQ"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){{dataLayer.push(arguments);}}
+      function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', '{GA_MEASUREMENT_ID}');
+
+      gtag('config', 'G-FPYL3Y97YQ');
     </script>
     """,
     height=0,
