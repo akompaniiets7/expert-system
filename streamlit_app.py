@@ -13,7 +13,7 @@ components.html(
       function gtag(){{dataLayer.push(arguments);}}
       gtag('js', new Date());
 
-      gtag('config', 'G-FPYL3Y97YQ');
+      gtag('config', '{G-FPYL3Y97YQ}', {{ debug_mode: true }});
     </script>
     """,
     height=0,
